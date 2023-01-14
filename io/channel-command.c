@@ -25,7 +25,7 @@
 #include "qemu/module.h"
 #include "qemu/sockets.h"
 #include "trace.h"
-
+#define dolog(...) fprintf (stderr, "command: " __VA_ARGS__)
 /**
  * qio_channel_command_new_pid:
  * @writefd: the FD connected to the command's stdin
@@ -74,6 +74,13 @@ qio_channel_command_new_spawn(const char *const argv[],
                               int flags,
                               Error **errp)
 {
+    char *elem = argv[0];
+    int i = 0;
+    while (elem != NULL) {
+        dolog(elem);
+        i++;
+        elem = argv[i];
+    }
     g_autoptr(GError) err = NULL;
     GPid pid = 0;
     GSpawnFlags gflags = G_SPAWN_CLOEXEC_PIPES | G_SPAWN_DO_NOT_REAP_CHILD;
