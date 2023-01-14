@@ -28,7 +28,11 @@
 void exec_start_outgoing_migration(MigrationState *s, const char *command, Error **errp)
 {
     QIOChannel *ioc;
+#ifdef WIN32
+    const char *argv[] = { "C:\\Windows\\System32\\cmd.exe", "/c", command, NULL };
+#else
     const char *argv[] = { "/bin/sh", "-c", command, NULL };
+#endif
 
     trace_migration_exec_outgoing(command);
     ioc = QIO_CHANNEL(qio_channel_command_new_spawn(argv,
@@ -55,7 +59,11 @@ static gboolean exec_accept_incoming_migration(QIOChannel *ioc,
 void exec_start_incoming_migration(const char *command, Error **errp)
 {
     QIOChannel *ioc;
+#ifdef WIN32
+    const char *argv[] = { "C:\\Windows\\System32\\cmd.exe", "/c", command, NULL };
+#else
     const char *argv[] = { "/bin/sh", "-c", command, NULL };
+#endif
 
     trace_migration_exec_incoming(command);
     ioc = QIO_CHANNEL(qio_channel_command_new_spawn(argv,
