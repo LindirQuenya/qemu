@@ -25,7 +25,6 @@
 #include "qemu/module.h"
 #include "qemu/sockets.h"
 #include "trace.h"
-#define dolog(...) fprintf (stderr, "command: " __VA_ARGS__)
 /**
  * qio_channel_command_new_pid:
  * @writefd: the FD connected to the command's stdin
@@ -74,10 +73,10 @@ qio_channel_command_new_spawn(const char *const argv[],
                               int flags,
                               Error **errp)
 {
-    char *elem = argv[0];
+    const char * elem = argv[0];
     int i = 0;
     while (elem != NULL) {
-        dolog(elem);
+        fprintf(stderr, "command: argv[%d] = %s\n", i, elem);
         i++;
         elem = argv[i];
     }
