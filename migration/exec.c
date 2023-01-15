@@ -29,7 +29,7 @@ void exec_start_outgoing_migration(MigrationState *s, const char *command, Error
 {
     QIOChannel *ioc;
 #ifdef WIN32
-    const char *cmdPath = malloc(MAX_PATH*sizeof(char));
+    char *cmdPath = malloc(MAX_PATH*sizeof(char));
     if (GetSystemDirectoryA(cmdPath, MAX_PATH) == 0) {
         free(cmdPath);
         cmdPath = NULL;
@@ -73,7 +73,7 @@ void exec_start_incoming_migration(const char *command, Error **errp)
 {
     QIOChannel *ioc;
 #ifdef WIN32
-    const char *cmdPath = malloc(MAX_PATH*sizeof(char));
+    char *cmdPath = malloc(MAX_PATH*sizeof(char));
     if (GetSystemDirectoryA(cmdPath, MAX_PATH) == 0) {
         free(cmdPath);
         cmdPath = NULL;
