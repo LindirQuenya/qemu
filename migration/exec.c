@@ -25,7 +25,7 @@
 #include "trace.h"
 
 #ifdef WIN32
-const char *exec_get_cmd_path() {
+const char *exec_get_cmd_path(void) {
     g_autofree char *systemPath = g_malloc(MAX_PATH*sizeof(char));
     const char *cmdPath;
     if (GetSystemDirectoryA(systemPath, MAX_PATH) == 0 || strcat_s(systemPath, MAX_PATH, "\\cmd.exe")) {
