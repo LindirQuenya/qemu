@@ -25,6 +25,7 @@
 #include "trace.h"
 
 #ifdef WIN32
+const char *exec_get_cmd_path(void);
 const char *exec_get_cmd_path(void) {
     g_autofree char *systemPath = g_malloc(MAX_PATH*sizeof(char));
     const char *cmdPath;
