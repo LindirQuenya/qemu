@@ -29,18 +29,21 @@ void exec_start_outgoing_migration(MigrationState *s, const char *command, Error
 {
     QIOChannel *ioc;
 #ifdef WIN32
-    char *cmdPath = malloc(MAX_PATH*sizeof(char));
-    if (GetSystemDirectoryA(cmdPath, MAX_PATH) == 0) {
-        free(cmdPath);
-        cmdPath = NULL;
+    char *systemPath = malloc(MAX_PATH*sizeof(char));
+    if (GetSystemDirectoryA(systemPath, MAX_PATH) == 0) {
+        free(systemPath);
+        systemPath = NULL;
     }
-    if (cmdPath != NULL && strcat_s(cmdPath, MAX_PATH, "\\cmd.exe")) {
-        free(cmdPath);
-        cmdPath = NULL;
+    if (systemPath != NULL && strcat_s(systemPath, MAX_PATH, "\\cmd.exe")) {
+        free(systemPath);
+        systemPath = NULL;
     }
-    if (cmdPath == NULL) {
+    const char *cmdPath;
+    if (systemPath == NULL) {
         warn_report("Could not find cmd.exe path, using default.");
         cmdPath = "C:\\Windows\\System32\\cmd.exe";
+    } else {
+        cmdPath = systemPath;
     }
     const char *argv[] = { cmdPath, "/c", command, NULL };
 #else
@@ -73,18 +76,21 @@ void exec_start_incoming_migration(const char *command, Error **errp)
 {
     QIOChannel *ioc;
 #ifdef WIN32
-    char *cmdPath = malloc(MAX_PATH*sizeof(char));
-    if (GetSystemDirectoryA(cmdPath, MAX_PATH) == 0) {
-        free(cmdPath);
-        cmdPath = NULL;
+    char *systemPath = malloc(MAX_PATH*sizeof(char));
+    if (GetSystemDirectoryA(systemPath, MAX_PATH) == 0) {
+        free(systemPath);
+        systemPath = NULL;
     }
-    if (cmdPath != NULL && strcat_s(cmdPath, MAX_PATH, "\\cmd.exe")) {
-        free(cmdPath);
-        cmdPath = NULL;
+    if (systemPath != NULL && strcat_s(systemPath, MAX_PATH, "\\cmd.exe")) {
+        free(systemPath);
+        systemPath = NULL;
     }
-    if (cmdPath == NULL) {
+    const char *cmdPath;
+    if (systemPath == NULL) {
         warn_report("Could not find cmd.exe path, using default.");
         cmdPath = "C:\\Windows\\System32\\cmd.exe";
+    } else {
+        cmdPath = systemPath;
     }
     const char *argv[] = { cmdPath, "/c", command, NULL };
 #else
