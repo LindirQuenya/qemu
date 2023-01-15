@@ -24,28 +24,26 @@
 #include "io/channel-command.h"
 #include "trace.h"
 
+#ifdef WIN32
+const char *exec_get_cmd_path() {
+    g_autofree char *systemPath = g_malloc(MAX_PATH*sizeof(char));
+    const char *cmdPath;
+    if (GetSystemDirectoryA(systemPath, MAX_PATH) == 0 || strcat_s(systemPath, MAX_PATH, "\\cmd.exe")) {
+        warn_report("Could not find cmd.exe path, using default.");
+        cmdPath = "C:\\Windows\\System32\\cmd.exe";
+    } else {
+        cmdPath = g_steal_pointer(&systemPath);
+    }
+    return cmdPath;
+}
+#endif
 
 void exec_start_outgoing_migration(MigrationState *s, const char *command, Error **errp)
 {
     QIOChannel *ioc;
+
 #ifdef WIN32
-    char *systemPath = malloc(MAX_PATH*sizeof(char));
-    if (GetSystemDirectoryA(systemPath, MAX_PATH) == 0) {
-        free(systemPath);
-        systemPath = NULL;
-    }
-    if (systemPath != NULL && strcat_s(systemPath, MAX_PATH, "\\cmd.exe")) {
-        free(systemPath);
-        systemPath = NULL;
-    }
-    const char *cmdPath;
-    if (systemPath == NULL) {
-        warn_report("Could not find cmd.exe path, using default.");
-        cmdPath = "C:\\Windows\\System32\\cmd.exe";
-    } else {
-        cmdPath = systemPath;
-    }
-    const char *argv[] = { cmdPath, "/c", command, NULL };
+    const char *argv[] = { exec_get_cmd_path(), "/c", command, NULL };
 #else
     const char *argv[] = { "/bin/sh", "-c", command, NULL };
 #endif
@@ -75,24 +73,9 @@ static gboolean exec_accept_incoming_migration(QIOChannel *ioc,
 void exec_start_incoming_migration(const char *command, Error **errp)
 {
     QIOChannel *ioc;
+
 #ifdef WIN32
-    char *systemPath = malloc(MAX_PATH*sizeof(char));
-    if (GetSystemDirectoryA(systemPath, MAX_PATH) == 0) {
-        free(systemPath);
-        systemPath = NULL;
-    }
-    if (systemPath != NULL && strcat_s(systemPath, MAX_PATH, "\\cmd.exe")) {
-        free(systemPath);
-        systemPath = NULL;
-    }
-    const char *cmdPath;
-    if (systemPath == NULL) {
-        warn_report("Could not find cmd.exe path, using default.");
-        cmdPath = "C:\\Windows\\System32\\cmd.exe";
-    } else {
-        cmdPath = systemPath;
-    }
-    const char *argv[] = { cmdPath, "/c", command, NULL };
+    const char *argv[] = { exec_get_cmd_path(), "/c", command, NULL };
 #else
     const char *argv[] = { "/bin/sh", "-c", command, NULL };
 #endif
