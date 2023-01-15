@@ -26,16 +26,15 @@
 
 #ifdef WIN32
 const char *exec_get_cmd_path(void);
-const char *exec_get_cmd_path(void) {
-    g_autofree char *systemPath = g_malloc(MAX_PATH*sizeof(char));
-    const char *cmdPath;
-    if (GetSystemDirectoryA(systemPath, MAX_PATH) == 0 || strcat_s(systemPath, MAX_PATH, "\\cmd.exe")) {
-        warn_report("Could not find cmd.exe path, using default.");
-        cmdPath = "C:\\Windows\\System32\\cmd.exe";
-    } else {
-        cmdPath = g_steal_pointer(&systemPath);
+const char *exec_get_cmd_path(void)
+{
+    g_autofree char *detected_path = g_new(char, MAX_PATH);
+    if (GetSystemDirectoryA(detected_path, MAX_PATH) == 0) {
+        warn_report("Could not detect cmd.exe path, using default.");
+        return "C:\\Windows\\System32\\cmd.exe";
     }
-    return cmdPath;
+    pstrcat(detected_path, MAX_PATH, "\\cmd.exe");
+    return g_steal_pointer(&detected_path);
 }
 #endif
 
