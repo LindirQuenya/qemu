@@ -23,6 +23,7 @@
 #include "migration.h"
 #include "io/channel-command.h"
 #include "trace.h"
+#include "qemu/cutils.h"
 
 #ifdef WIN32
 const char *exec_get_cmd_path(void);
